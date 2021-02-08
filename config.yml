@@ -1,0 +1,5 @@
+---
+  config:
+    inside_time_threshold: 3
+    outside_time_threshold: 3
+    session_stop_time_threshold: 5
