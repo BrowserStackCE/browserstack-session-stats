@@ -36,7 +36,6 @@ begin
   offset = 0
   session_count_iterator = 1
   config_array = YAML.load(File.read("config.yml"))
-
   puts "Session_ID\tInside_Time\tOutside_Time\tUnaccounted_Time\tTotal_Session_Time\tInside_Time_Percent\tOutside_Time_Percent\tUnaccounted_Time_Percentage\tTotal_REQs\tSTOP_SESSION_Time"
 
   loop do
@@ -56,10 +55,12 @@ begin
           automation_session_raw_logs = results_json[i]['automation_session']['logs']
           automation_session_duration = results_json[i]['automation_session']['duration']
           session_id = results_json[i]['automation_session']['hashed_id']
+          video_url = results_json[i]['automation_session']['video_url']
         else
           automation_session_raw_logs = results_json['automation_session']['logs']
           automation_session_duration = results_json['automation_session']['duration']
           session_id = results_json['automation_session']['hashed_id']
+          video_url = results_json['automation_session']['video_url']
         end
         latency_data_to_analyse = []
         uri = URI(automation_session_raw_logs)
@@ -75,7 +76,7 @@ begin
           line_split = line.split
           next if line_split.empty?
           ts_split = line_split[1].split(':')
-          cmd = Command.new(Time.parse("#{line_split[0]} #{ts_split[0]}:#{ts_split[1]}:#{ts_split[2]}.#{ts_split[3]}", '%Y-%m-%d %H:%M:%S.%3N'), (line_split[2]).to_s, line.to_s)
+          cmd = Command.new(Time.parse("#{line_split[0]} #{ts_split[0]}:#{ts_split[1]}:#{ts_split[2]}.#{ts_split[3]}"), (line_split[2]).to_s, line.to_s)
           cmd_list.push(cmd)
         end
 
@@ -113,6 +114,10 @@ begin
         outside_time_per = outside_time * 100 / automation_session_duration
         delta_unaccounted_time_per = delta_unaccounted_time * 100 / automation_session_duration
         puts "#{session_id}\t#{inside_time.round(3)}\t#{outside_time.round(3)}\t#{delta_unaccounted_time.round(3)}\t#{automation_session_duration.round(3)}\t#{inside_time_per.round(3)}\t#{outside_time_per.round(3)}\t#{delta_unaccounted_time_per.round(3)}\t#{tot_reqs}\t#{stop_session_time}"
+        if analysis_mode == 'session'
+          puts "\nVideo URL: #{video_url}"
+          puts "\nRaw Logs: #{automation_session_raw_logs}"
+        end
       end
     else
       break
