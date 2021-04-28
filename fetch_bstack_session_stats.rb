@@ -85,7 +85,7 @@ begin
         stop_session_time = 0.0
         tot_reqs = 0
         (0..cmd_list.length - 1).each do |i|
-          if !cmd_list[i + 1].nil? && cmd_list[i].get_command_type == 'REQUEST' && cmd_list[i + 1].get_command_type == 'RESPONSE'
+          if !cmd_list[i + 1].nil? && (cmd_list[i].get_command_type == 'REQUEST' && cmd_list[i + 1].get_command_type == 'RESPONSE') || (cmd_list[i].get_command_type == 'REQUEST' && ['DEBUG'].include?(cmd_list[i+1].get_command_type) && !cmd_list[i + 2].nil? && cmd_list[i + 2].get_command_type == 'RESPONSE')
             curr_resp_minus_req = (cmd_list[i + 1].get_curr_timestamp - cmd_list[i].get_curr_timestamp)
             inside_time += curr_resp_minus_req
             tot_reqs += 1
