@@ -1,0 +1,5 @@
+source 'https://rubygems.org'
+gem 'rest-client', '~> 1.8'
+gem 'json', '~> 2.6', '>= 2.6.1'
+gem 'yaml'
+gem 'net-http'
