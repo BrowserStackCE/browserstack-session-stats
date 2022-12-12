@@ -36,7 +36,7 @@ begin
   offset = 0
   session_count_iterator = 1
   config_array = YAML.load(File.read("config.yml"))
-
+  puts "Session_ID\tInside_Time\tOutside_Time\tUnaccounted_Time\tTotal_Session_Time\tInside_Time_Percent\tOutside_Time_Percent\tUnaccounted_Time_Percentage\tTotal_REQs\tSTOP_SESSION_Time"
   loop do
     if analysis_mode == 'build'
       base_url = "https://#{ENV['BROWSERSTACK_USERNAME']}:#{ENV['BROWSERSTACK_ACCESS_KEY']}@api.browserstack.com/automate/builds/#{build_or_session_id}/sessions.json?limit=#{limit}&offset=#{offset}"
@@ -113,17 +113,7 @@ begin
         inside_time_per = inside_time * 100 / automation_session_duration
         outside_time_per = outside_time * 100 / automation_session_duration
         delta_unaccounted_time_per = delta_unaccounted_time * 100 / automation_session_duration
-
-        puts "\nSession_ID:\t\t\t#{session_id}\n\n"
-        puts "Inside_Time:\t\t\t#{inside_time.round(3)} seconds"
-        puts "Outside_Time:\t\t\t#{outside_time.round(3)} seconds"
-        puts "Unaccounted_Time:\t\t#{delta_unaccounted_time.round(3)} seconds"
-        puts "Total_Session_Time:\t\t#{automation_session_duration.round(3)} seconds\n\n"
-        puts "Inside_Time_Percent:\t\t#{inside_time_per.round(3)}%"
-        puts "Outside_Time_Percent:\t\t#{outside_time_per.round(3)}%"
-        puts "Unaccounted_Time_Percentage:\t#{delta_unaccounted_time_per.round(3)}%\n\n"
-        puts "Total_REQs:\t\t\t#{tot_reqs}"
-        puts "STOP_SESSION_Time:\t\t#{stop_session_time}\n\n"
+        puts "#{session_id}\t#{inside_time.round(3)}\t#{outside_time.round(3)}\t#{delta_unaccounted_time.round(3)}\t#{automation_session_duration.round(3)}\t#{inside_time_per.round(3)}\t#{outside_time_per.round(3)}\t#{delta_unaccounted_time_per.round(3)}\t#{tot_reqs}\t#{stop_session_time}"
         
         if analysis_mode == 'session'
           puts "\nVideo URL: #{video_url}"
