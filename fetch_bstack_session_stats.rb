@@ -73,6 +73,7 @@ begin
         end
         cmd_list = []
         res.body.lines.each do |line|
+          line.gsub! '\n', ''
           line_split = line.split
           next if line_split.empty?
           ts_split = line_split[1].split(':')
