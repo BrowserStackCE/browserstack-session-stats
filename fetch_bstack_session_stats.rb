@@ -73,7 +73,7 @@ begin
         cmd_list = []
         res.body.lines.each do |line|
           line.gsub! '\n', ''
-          next if !line.start_with?('2022')
+          next if !line.start_with?(Time.new.year.to_s)
           line_split = line.split
           next if line_split.empty?
           ts_split = line_split[1].split(':')
