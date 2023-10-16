@@ -36,18 +36,23 @@ begin
   offset = 0
   session_count_iterator = 1
   config_array = YAML.load(File.read("config.yml"))
-  puts "Session_ID\tInside_Time\tOutside_Time\tUnaccounted_Time\tTotal_Session_Time\tInside_Time_Percent\tOutside_Time_Percent\tUnaccounted_Time_Percentage\tTotal_REQs\tSTOP_SESSION_Time"
+
   loop do
     if analysis_mode == 'build'
       base_url = "https://#{ENV['BROWSERSTACK_USERNAME']}:#{ENV['BROWSERSTACK_ACCESS_KEY']}@api.browserstack.com/automate/builds/#{build_or_session_id}/sessions.json?limit=#{limit}&offset=#{offset}"
+    elsif analysis_mode == 'aa_build'
+      base_url = "https://#{ENV['BROWSERSTACK_USERNAME']}:#{ENV['BROWSERSTACK_ACCESS_KEY']}@api.browserstack.com/app-automate/builds/#{build_or_session_id}/sessions.json?limit=#{limit}&offset=#{offset}"
     elsif analysis_mode == 'session'
       base_url = "https://#{ENV['BROWSERSTACK_USERNAME']}:#{ENV['BROWSERSTACK_ACCESS_KEY']}@api.browserstack.com/automate/sessions/#{build_or_session_id}.json"
+    elsif analysis_mode == 'aa_session'
+      base_url = "https://#{ENV['BROWSERSTACK_USERNAME']}:#{ENV['BROWSERSTACK_ACCESS_KEY']}@api.browserstack.com/app-automate/sessions/#{build_or_session_id}.json"
+
     end
 
     results = RestClient.get(base_url)
     results_json = JSON.parse(results.body)
 
-    if (analysis_mode == 'build' && !results_json.empty?) || ((analysis_mode == 'session' && session_count_iterator == 1))
+    if ((analysis_mode == 'build' || analysis_mode == 'aa_build') && !results_json.empty?) || (((analysis_mode == 'session' || analysis_mode == 'aa_session') && session_count_iterator == 1))
       session_count_iterator += 1
       (0..results_json.length - 1).each do |i|
         if results_json.length > 1
@@ -114,7 +119,14 @@ begin
         inside_time_per = inside_time * 100 / automation_session_duration
         outside_time_per = outside_time * 100 / automation_session_duration
         delta_unaccounted_time_per = delta_unaccounted_time * 100 / automation_session_duration
-        puts "#{session_id}\t#{inside_time.round(3)}\t#{outside_time.round(3)}\t#{delta_unaccounted_time.round(3)}\t#{automation_session_duration.round(3)}\t#{inside_time_per.round(3)}\t#{outside_time_per.round(3)}\t#{delta_unaccounted_time_per.round(3)}\t#{tot_reqs}\t#{stop_session_time}"
+        pure_inside_time_per = inside_time / (inside_time + outside_time) * 100
+        pure_outside_time_per = outside_time / (inside_time + outside_time) * 100
+
+        puts "\n\n============================================================"
+        puts "Session ID: #{session_id}\nInside_Time: #{inside_time.round(3)} seconds\nOutside_Time: #{outside_time.round(3)} seconds\nUnaccounted_Time: #{delta_unaccounted_time.round(3)} seconds\nTotal_session_Time: #{automation_session_duration.round(3)} seconds\nInside_Time_Percent: #{inside_time_per.round(3)} %\nOutside_Time_Percent: #{outside_time_per.round(3)} %\nUnaccounted_Time_Percent: #{delta_unaccounted_time_per.round(3)} %\nTotal_REQs: #{tot_reqs}\nSTOP_SESSION_TIME: #{stop_session_time} seconds\n\n"
+
+        puts "Pure Inside Time vs Outside Time percentage (without considering Unaccounted Time and Stop Session Time)\nPure_Inside_Time_Percent: #{pure_inside_time_per.round(3)} %\nPure_Outside_Time_Percent: #{pure_outside_time_per.round(3)} %"
+        puts "============================================================"
         
         if analysis_mode == 'session'
           puts "\nVideo URL: #{video_url}"
@@ -133,7 +145,7 @@ begin
     value.each do |entry|
       puts "Latency info entry: \n#{entry}\n"
     end
-    puts "--------------------------------------------------\n\n"
+    puts "---------------------------------------------------------------------------------------------\n\n"
   end
 rescue StandardError => e
   puts "A runtime exception occurred while processing the request: #{e.message}"

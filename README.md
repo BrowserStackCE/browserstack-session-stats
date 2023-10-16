@@ -5,14 +5,24 @@ This repository helps analyse the BrowserStack Automate test sessions for any la
 
 - Ensure you have [Ruby](https://www.ruby-lang.org/en/downloads/) (2.x or 3.x) setup on your machine.
 
-- Run analysis for a particular test session
+- Run analysis for a particular test session - Automate
 ```
 BROWSERSTACK_USERNAME=<YOUR_BROWSERSTACK_USERNAME> BROWSERSTACK_ACCESS_KEY=<YOUR_BROWSERSTACK_ACCESS_KEY> ruby fetch_bstack_session_stats.rb session <BROWSERSTACK_SESSION_ID>
 ```
 
-- Run analysis for an entire test build
+- Run analysis for a particular test session - App Automate
+```
+BROWSERSTACK_USERNAME=<YOUR_BROWSERSTACK_USERNAME> BROWSERSTACK_ACCESS_KEY=<YOUR_BROWSERSTACK_ACCESS_KEY> ruby fetch_bstack_session_stats.rb aa_session <BROWSERSTACK_SESSION_ID>
+```
+
+- Run analysis for an entire test build - Automate
 ```
 BROWSERSTACK_USERNAME=<YOUR_BROWSERSTACK_USERNAME> BROWSERSTACK_ACCESS_KEY=<YOUR_BROWSERSTACK_ACCESS_KEY> ruby fetch_bstack_session_stats.rb build <BROWSERSTACK_BUILD_ID>
+```
+
+- Run analysis for an entire test build - App Automate
+```
+BROWSERSTACK_USERNAME=<YOUR_BROWSERSTACK_USERNAME> BROWSERSTACK_ACCESS_KEY=<YOUR_BROWSERSTACK_ACCESS_KEY> ruby fetch_bstack_session_stats.rb aa_build <BROWSERSTACK_BUILD_ID>
 ```
 
 - In case, you would like to tailor the thresholds for inside_time, outside_time, session_stop_time, please update the same in config.yml in seconds.
